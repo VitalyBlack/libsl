@@ -168,6 +168,15 @@ val annotationSerializer = JsonSerializer<Annotation> { src, _, context ->
     }
 }
 
+val typeAnnotationSerializer = JsonSerializer<TypeAnnotation> {src, _, context ->
+    JsonObject().apply{
+        addProperty("name", src.name)
+        add("args", JsonArray().apply {
+            src.values.forEach { add(context.serialize(it, Expression::class.java))}
+        })
+    }
+}
+
 val typeSerializer = JsonSerializer<Type> { src, _, context ->
     JsonObject().apply {
         addProperty("name", src.name)
@@ -236,6 +245,16 @@ val functionSerializer = JsonSerializer<Function> { src, _, context ->
         addProperty("name", src.name)
         addProperty("automaton", src.automatonName)
         addProperty("returnType", src.returnType?.fullName)
+        if(src.returnType != null && src.typeAnnotation != null) {
+            add("typeAnnotation", JsonObject().apply {
+                addProperty("name", src.typeAnnotation?.name)
+                add("args", JsonArray().apply{
+                    src.typeAnnotation?.values?.forEach { value ->
+                        add(context.serialize(value, Expression::class.java))
+                    }
+                })
+            })
+        }
         addProperty("target", src.target.name)
         addProperty("hasBody", src.hasBody)
 

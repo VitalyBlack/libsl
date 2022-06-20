@@ -191,6 +191,7 @@ data class Function(
     val context: LslContext,
     val hasBody: Boolean
 ) : Node() {
+    var typeAnnotation: TypeAnnotation? = null
     val automaton: Automaton by lazy { context.resolveAutomaton(automatonName) ?: error("unresolved automaton") }
     val qualifiedName: String by lazy { "${automaton.name}.$name" }
     lateinit var target: Automaton
@@ -309,6 +310,15 @@ open class Annotation(
 ) {
     override fun toString(): String {
         return "Annotation(name='$name', values=$values)"
+    }
+}
+
+open class TypeAnnotation(
+    val name: String,
+    val values: List<Expression>
+) {
+    override fun toString(): String {
+        return "TypeAnnotation(name='$name', values=$values)"
     }
 }
 

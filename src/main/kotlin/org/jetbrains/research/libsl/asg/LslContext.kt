@@ -49,16 +49,16 @@ class LslContext {
         name: String,
         automatonName: String?,
         args: List<FunctionArgument>? = null,
-        argsType: List<Type>? = null,
-        returnType: Type? = null
+        returnType: Type? = null,
+        argsType: List<Type>? = null
     ): Function? = functionStorage[name]
         ?.asSequence()
         ?.filter { it.automatonName == automatonName }
         ?.filter { if (args != null) it.args == args else true }
-        ?.filter { if (argsType != null) it.args.map { arg -> arg.type }.toList() == argsType else true }
         ?.filter { if (returnType != null) it.returnType == returnType else true }
+        ?.filter { if (argsType != null) it.args.map { arg -> arg.type }.toList() == argsType else true }
         ?.firstOrNull()
-        ?: importedContexts.firstNotNullOfOrNull { it.resolveFunction(name, automatonName, args, argsType, returnType) }
+        ?: importedContexts.firstNotNullOfOrNull { it.resolveFunction(name, automatonName, args, returnType, argsType) }
 
     fun storeResolvedAutomaton(automaton: Automaton) {
         automatonStorage[automaton.name] = automaton

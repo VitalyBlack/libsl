@@ -200,8 +200,7 @@ parameter
    ;
 
 functionType
-   :   Identifier
-   |   typeAnnotation? name=Identifier COLON type=Identifier
+   :   Identifier typeAnnotation?
    ;
 
 /* type annotation

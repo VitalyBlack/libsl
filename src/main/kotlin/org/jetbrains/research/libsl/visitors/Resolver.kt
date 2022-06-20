@@ -274,11 +274,11 @@ class Resolver(
             return
         }
 
-        val typeName = ctx.functionType?.processIdentifier()
+        val typeName = ctx.functionType()?.Identifier()?.processIdentifier()
         val returnType = if (typeName != null) {
             val resolved = context.resolveType(typeName)
             if (resolved == null) {
-                errorManager(UnresolvedType(typeName, ctx.functionType.position()))
+                errorManager(UnresolvedType(typeName, ctx.functionType().position()))
                 return
             }
             resolved

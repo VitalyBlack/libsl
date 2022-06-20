@@ -106,5 +106,10 @@ class GeneratedTests {
         testRunner("variableResolution")
     }
 
+    @Test
+    fun testTypeAnnotations() {
+        testRunner("typeAnnotations")
+    }
+
 }
 

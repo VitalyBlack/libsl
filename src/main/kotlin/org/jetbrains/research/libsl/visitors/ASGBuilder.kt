@@ -130,7 +130,7 @@ class ASGBuilder(
                 resolved
             }
 
-            val resolved = context.resolveFunction(functionName, automatonName = automatonName, argsType=functionArgs)
+            val resolved = context.resolveFunction(functionName, automatonName = automatonName, argsType =functionArgs)
                 ?: context.resolveFunction(functionName, automatonName = automatonName)
 
             if (resolved == null) {
@@ -215,8 +215,16 @@ class ASGBuilder(
 
             FunctionArgument(argName, argType, argIndex++, annotation)
         }.orEmpty()
-        val typeName = ctx.functionType?.processIdentifier()
+
+        val typeName = ctx.functionType()?.Identifier()?.processIdentifier()
         val type = if (typeName != null) context.resolveType(typeName) ?: error("unresolved type: $typeName") else null
+        val typeAnnotation = ctx.functionType()?.typeAnnotation()?.let { anno ->
+            val name = anno.Identifier().processIdentifier()
+            val values = anno.valuesAndIdentifiersList()?.expression()?.map { atomic ->
+                visitExpression(atomic)
+            }.orEmpty()
+            TypeAnnotation(name, values)
+        }
 
         val preamble = ctx.functionPreamble()?.preamblePart()?.map { part ->
             when {
@@ -267,10 +275,14 @@ class ASGBuilder(
         val argumentWithTargetAnno = args.firstOrNull { it.annotation?.name == "target" }
         val resolvedFunction = context.resolveFunction(
             functionName,
-            automatonName=ownerAutomatonName,
+            automatonName =ownerAutomatonName,
             argsType = args.map { it.type },
             returnType = type
         ) ?: error("error on parsing function: $ownerAutomatonName.$functionName")
+
+        if(typeAnnotation != null){
+            resolvedFunction.typeAnnotation = typeAnnotation
+        }
 
         if (argumentWithTargetAnno?.annotation?.name == "target") {
             val target = (argumentWithTargetAnno.annotation as TargetAnnotation).targetAutomaton
